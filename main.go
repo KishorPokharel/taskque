@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/KishorPokharel/taskque/postgres"
 	_ "github.com/lib/pq"
 )
 
@@ -18,8 +19,8 @@ func main() {
 	}
 
 	app := &application{
-		db:     db,
-		logger: log.Default(),
+		logger:  log.Default(),
+		service: postgres.NewService(db),
 	}
 	if err := app.run(); err != nil {
 		log.Fatal(err)

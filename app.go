@@ -1,24 +1,24 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/KishorPokharel/taskque/postgres"
+	"github.com/julienschmidt/httprouter"
 )
 
 type application struct {
-	db     *sql.DB
-	logger *log.Logger
+	logger  *log.Logger
+	service postgres.Service
 }
 
 func (app *application) routes() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello")
-	})
+	router := httprouter.New()
 
-	return mux
+	router.POST("/api/users/register", app.handleUserRegister)
+
+	return router
 }
 
 func (app *application) run() error {
