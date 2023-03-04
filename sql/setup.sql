@@ -3,7 +3,7 @@ create extension if not exists "citext";
 create table users (
     id bigserial primary key,
     username text not null,
-    email citext not null,
+    email citext not null unique,
     password bytea not null,
     created_at timestamp(0) with time zone not null default now()
 );
