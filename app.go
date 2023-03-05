@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/api/users/login", app.handleUserLogin)
 
 	router.HandlerFunc(http.MethodPost, "/api/tasks", app.authenticate(app.handleTaskCreate))
+	router.HandlerFunc(http.MethodPost, "/api/tasks/sort", app.authenticate(app.handleTaskSort))
 
 	return app.logRequest(router)
 }
