@@ -10,10 +10,9 @@ import (
 	"github.com/KishorPokharel/taskque/postgres"
 	validator "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/julienschmidt/httprouter"
 )
 
-func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Request) {
 	input := struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -79,7 +78,7 @@ func (app *application) handleUserRegister(w http.ResponseWriter, r *http.Reques
 	app.jsonResponse(w, http.StatusCreated, out)
 }
 
-func (app *application) handleUserLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (app *application) handleUserLogin(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`

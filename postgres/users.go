@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"errors"
 	"time"
@@ -111,6 +112,31 @@ func (us UserService) GetByEmail(email string) (*User, error) {
 	row := us.DB.QueryRowContext(context.Background(), query, args...)
 	user := User{}
 	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password.hash, &user.CreatedAt)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrUserNotFound
+		default:
+			return nil, err
+		}
+	}
+	return &user, nil
+}
+
+func (u UserService) GetForToken(token string) (*User, error) {
+	tokenHash := sha256.Sum256([]byte(token))
+	query := `
+        select users.id, users.username, users.email, users.created_at
+        from users
+        inner join tokens
+        on tokens.user_id = users.id
+        where tokens.hash = $1
+        and expiry > $2
+    `
+	args := []any{tokenHash[:], time.Now()}
+	row := u.DB.QueryRowContext(context.Background(), query, args...)
+	user := User{}
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.CreatedAt)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):

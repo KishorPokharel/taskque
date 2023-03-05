@@ -16,10 +16,12 @@ type application struct {
 func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
-	router.POST("/api/users/register", app.handleUserRegister)
-	router.POST("/api/users/login", app.handleUserLogin)
+	router.HandlerFunc(http.MethodPost, "/api/users/register", app.handleUserRegister)
+	router.HandlerFunc(http.MethodPost, "/api/users/login", app.handleUserLogin)
 
-	return router
+	router.HandlerFunc(http.MethodPost, "/api/tasks", app.authenticate(app.handleTaskCreate))
+
+	return app.logRequest(router)
 }
 
 func (app *application) run() error {
