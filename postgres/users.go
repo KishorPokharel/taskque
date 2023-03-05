@@ -100,3 +100,24 @@ func (us UserService) Create(user *User) error {
 
 	return nil
 }
+
+func (us UserService) GetByEmail(email string) (*User, error) {
+	query := `
+		select id, username, email, password, created_at
+		from users
+		where email = $1
+	`
+	args := []any{email}
+	row := us.DB.QueryRowContext(context.Background(), query, args...)
+	user := User{}
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password.hash, &user.CreatedAt)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrUserNotFound
+		default:
+			return nil, err
+		}
+	}
+	return &user, nil
+}

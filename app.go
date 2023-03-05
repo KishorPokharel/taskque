@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
 	router.POST("/api/users/register", app.handleUserRegister)
+	router.POST("/api/users/login", app.handleUserLogin)
 
 	return router
 }

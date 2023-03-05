@@ -12,7 +12,8 @@ func (app *application) errorResponse(w http.ResponseWriter, status int, message
 	w.WriteHeader(status)
 	b := &bytes.Buffer{}
 	out := map[string]any{
-		"error": message,
+		"success": false,
+		"message": message,
 	}
 	if err := json.NewEncoder(b).Encode(&out); err != nil {
 		app.logger.Println(err)
