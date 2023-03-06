@@ -10,6 +10,27 @@ import (
 	validator "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+func (app *application) handleTasksGet(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	tasks, err := app.service.Task.GetAll(user.ID)
+	if err != nil {
+		app.errorResponse(
+			w,
+			http.StatusInternalServerError,
+			"Internal Server Error",
+			err,
+		)
+		return
+	}
+	out := map[string]any{
+		"success": true,
+		"data": map[string]any{
+			"tasks": tasks,
+		},
+	}
+	app.jsonResponse(w, http.StatusOK, out)
+}
+
 func (app *application) handleTaskCreate(w http.ResponseWriter, r *http.Request) {
 	input := struct {
 		Content string `json:"content"`

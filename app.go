@@ -19,6 +19,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/api/users/register", app.handleUserRegister)
 	router.HandlerFunc(http.MethodPost, "/api/users/login", app.handleUserLogin)
 
+	router.HandlerFunc(http.MethodGet, "/api/tasks", app.authenticate(app.handleTasksGet))
 	router.HandlerFunc(http.MethodPost, "/api/tasks", app.authenticate(app.handleTaskCreate))
 	router.HandlerFunc(http.MethodPost, "/api/tasks/sort", app.authenticate(app.handleTaskSort))
 

@@ -13,13 +13,36 @@ var ErrInvalidData = errors.New("invalid task id or source index or destination 
 
 type Task struct {
 	ID        int64     `json:"id"`
-	UserID    int64     `json:"user_id"`
+	UserID    int64     `json:"user_id,omitempty"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type TaskService struct {
 	DB *sql.DB
+}
+
+func (ts TaskService) GetAll(userID int64) ([]Task, error) {
+	query := `
+        select x.id, content, created_at 
+        from taskorder, unnest(value)
+        with ordinality as x(id)
+        join tasks on tasks.id = x.id where tasks.user_id = $1;
+    `
+	rows, err := ts.DB.Query(query, userID)
+	if err != nil {
+		return []Task{}, err
+	}
+	tasks := []Task{}
+	for rows.Next() {
+		task := Task{}
+		rows.Scan(&task.ID, &task.Content, &task.CreatedAt)
+		tasks = append(tasks, task)
+	}
+	if err := rows.Close(); err != nil {
+		return []Task{}, err
+	}
+	return tasks, nil
 }
 
 func (ts TaskService) Insert(task *Task) error {
