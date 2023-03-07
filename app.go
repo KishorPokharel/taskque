@@ -23,7 +23,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/api/tasks", app.authenticate(app.handleTaskCreate))
 	router.HandlerFunc(http.MethodPost, "/api/tasks/sort", app.authenticate(app.handleTaskSort))
 
-	return app.logRequest(router)
+	return app.logRequest(app.enableCors(router))
 }
 
 func (app *application) run() error {
